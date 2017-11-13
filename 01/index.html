@@ -1,0 +1,49 @@
+<!DOCType html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style type="text/css">
+
+    </style>
+    <script type="text/javascript" src="../vue-2.4.0.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div>{{ message }}</div>
+        <div>{{ message2 }}</div>
+        <div @click='onAppClick(message)'>
+            <div>沧海一声笑，滔滔两岸潮</div>
+        </div>
+    </div>
+    <script>
+        Vue.config.performance = true;
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue!',
+                hidetxt: 'Hidden Vue Text'
+            },
+            computed: {
+                message2: function() {
+                    return this.hidetxt + '--computed';
+                }
+            },
+            watch: {
+                hidetxt: function(val, oldVal) {
+                    console.log(val, oldVal);
+                }
+            },
+            methods: {
+                onAppClick: function(txt) {
+                    this.hidetxt = 'click-onApp';
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
