@@ -1,11 +1,11 @@
 # Vue源码学习01-响应式架构的实现
-> 合抱之木，生于毫末；九层之台，起于累土；千里之行，始于足下。——《老子》
-## 前言
+> 合抱之木，生于毫末；九层之台，起于累土；千里之行，始于足下。——《老子》
+## 前言
 由于Vue版本更新还是比较快的，github上源码也会相应变化，所以学习的源码是可以直接&lt;script&gt;引入的2.4.0开发版本。
 
 所有的故事从下面开始。
 ```javascript
-//github:vue/src/core/instance/index.js
+//github:vue/src/core/instance/index.js
 function Vue (options) {
   if (process.env.NODE_ENV !== 'production' &&
     !(this instanceof Vue)
@@ -24,11 +24,11 @@ renderMixin(Vue)
 export default Vue
 ```
 
-## [响应式原理（Object.defineProperty ）](https://cn.vuejs.org/v2/guide/reactivity.html)
-官网上对原理已经有了通俗易懂的介绍，在此不再赘述。主要是学习在代码层面是如何实现的。
+## [响应式原理（Object.defineProperty ）](https://cn.vuejs.org/v2/guide/reactivity.html)
+官网上对原理已经有了通俗易懂的介绍，在此不再赘述。主要是学习在代码层面是如何实现的。
 
-initMixin、stateMixin等各种Mixin函数首先在Vue.prototype上定义一系列工具函数。
-而其中最主要的initMixin在Vue.prototype上定义了_init函数，当我们new Vue()时就会来到这里。
+initMixin、stateMixin等各种Mixin函数首先在Vue.prototype上定义一系列工具函数。
+其中最主要的initMixin在Vue.prototype上定义了_init函数，当我们new Vue()时就会来到这里。
 ```javascript
 function initMixin(Vue) {
     Vue.prototype._init = function(options) {
@@ -42,7 +42,7 @@ function initMixin(Vue) {
     };
 }
 ```
-先来看看initState做了哪些事情。
+先来看看initState做了哪些事情。
 
 ```javascript
 function initState(vm) {
@@ -97,15 +97,15 @@ var sharedPropertyDefinition = {
 };
 
 ```
-proxy函数在Vue上直接定义了各个data属性的proxyGetter和proxySetter，而相应的value通过Vue._data进行统一管理。
+proxy函数在Vue上直接定义了各个data属性的proxyGetter和proxySetter，而相应的value通过Vue._data进行统一管理。
 
-以上代码的作用在["Vue实例-数据与方法"](https://cn.vuejs.org/v2/guide/instance.html#数据与方法)中有详细说明。
+以上代码的作用在["Vue实例-数据与方法"](https://cn.vuejs.org/v2/guide/instance.html#数据与方法)中有详细说明。
 ## data选项的处理
-### 如何将data选项记录为依赖
+### 如何将data选项记录为依赖
 
 > 当你把一个普通的 JavaScript 对象传给 Vue 实例的 data 选项，Vue 将遍历此对象所有的属性，并使用 Object.defineProperty 把这些属性全部转为 getter/setter。
 
-proxy函数过后是observe核心函数，代码有点长，需要点耐心。
+proxy函数过后是observe核心函数，代码有点长，需要点耐心。
 ```javascript
 function observe(value, asRootData) {
     ...
@@ -178,11 +178,11 @@ function defineReactive$$1(
 }
 
 ```
-根据代码，Vue在Vue._data中再一次定义了各个data选项的reactiveGetter和reactiveSetter，并且通过闭包，在defineReactive$$1函数中给每个data选项定义了一个Dep类型的私有dep变量。这个dep变量目前并没有用到，但它在reactiveGetter和reactiveSetter都有存在，是个核心角色，稍后详谈。
+根据代码，Vue在Vue._data中再一次定义了各个data选项的reactiveGetter和reactiveSetter，并且通过闭包，在defineReactive$$1函数中给每个data选项定义了一个Dep类型的私有dep变量。这个dep变量目前并没有用到，但它在reactiveGetter和reactiveSetter都有存在，是个核心角色，稍后详谈。
 
-到此，data选项已经转化成了依赖。
-### data选项依赖如何工作
-再次回到_init函数，随着initState工作的结束，轮到$mount上场了。
+到此，data选项已经转化成了依赖。
+### data选项依赖如何工作
+再次回到_init函数，随着initState工作的结束，轮到$mount上场了。
 ```javascript
 Vue$3.prototype.$mount = function(
     el,
@@ -243,11 +243,11 @@ var Watcher = function Watcher(
         this.get();
 };
 ```
-这里的Wathcer类型和前面提到的Dep类型，共同构成了data选项依赖工作的核心。
-new Watcher调用的get函数做了下面几件事，这里的Watcher实例称为render watcher。
-* 将watcher自身压入一个targetStack栈中，可以简单理解为一个context
-* 执行传入的exporFn参数，这里是updateComponent，它是页面html的渲染函数
-* 将前面压入的watcher出栈
+这里的Wathcer类型和前面提到的Dep类型，共同构成了data选项依赖工作的核心。
+new Watcher调用的get函数做了下面几件事，这里的Watcher实例称为render watcher。
+* 将watcher自身压入一个targetStack栈中，可以简单理解为一个context上下文
+* 执行传入的exporFn参数，这里是updateComponent，它是页面html的渲染函数
+* 将前面压入的watcher出栈
 ```javascript
 Watcher.prototype.get = function get() {
     pushTarget(this);
@@ -296,9 +296,9 @@ Watcher.prototype.cleanupDeps = function cleanupDeps() {
     this.newDeps.length = 0;
 };
 ```
-updateComponent渲染html，就会获取data选项的值来展示实际数据，从而触发了data选项的reactiveGetter。(updateComponent复杂且强大，以后有机会再详细看下它的实现)
+updateComponent渲染html，就会获取data选项的值来展示实际数据，从而触发了data选项的reactiveGetter。(updateComponent复杂且强大，以后有机会再详细看下它的实现)
 
-回顾一下之前reactiveGetter的定义，此时的Dep.target已经是一个Watcher类型的变量了，下一步当然是dep.depend
+回顾一下之前reactiveGetter的定义，此时的Dep.target已经是一个Watcher类型的变量了，下一步当然是dep.depend
 ```javascript
 var Dep = function Dep() {
     this.id = uid++;
@@ -322,13 +322,13 @@ Watcher.prototype.addDep = function addDep(dep) {
     }
 };
 ```
-Watcher和Dep的作用清晰展现出来了
+Watcher和Dep的作用清晰展现出来了
 
-- 每一个data依赖利用dep.subs来保存依赖的watcher
-- 每一个watcher利用newDeps属性来收集用到的dep
-- Watcher和Dep的相互作用实现了一个观察者模式。
+- 每一个data依赖利用dep.subs来保存依赖的watcher
+- 每一个watcher利用newDeps属性来收集用到的dep
+- Watcher和Dep的相互作用实现了一个观察者模式。
 
-### 如何在data依赖发生变化时更新组件
+### 如何在data依赖发生变化时更新组件
 当data依赖项的reactiveSetter被调用时,dep.notify会通知所有依赖的watcher进行update。
 ```javascript
 Dep.prototype.notify = function notify() {
@@ -343,7 +343,7 @@ Watcher.prototype.update = function update() {
     queueWatcher(this);
 };
 ```
-前面说过每个data依赖都会保存依赖的watcher，所以先收集这次update所涉及的wathcer队列并进行去重处理，这也是queueWatcher代码中has[id]和waiting所起的作用。
+前面说过每个data依赖都会保存依赖的watcher，所以先收集这次update所涉及的wathcer队列并进行去重处理，这也是queueWatcher代码中has[id]和waiting所起的作用。
 ```javascript
 var queue = [];
 var activatedChildren = [];
@@ -380,7 +380,7 @@ function queueWatcher(watcher) {
     }
 }
 ```
-然后对创建好的watcher队列进行了一次排序处理，具体原因在代码注释中讲的非常详细。注意其中的watcher.run，它会调用watcher创建之初传入的expOrFn，至此完整的数据依赖响应过程完成。
+然后对创建好的watcher队列进行了一次排序处理，具体原因在代码注释中讲的非常详细。注意其中的watcher.run，它会调用watcher创建之初传入的expOrFn，至此完整的数据依赖响应过程完成。
 ```javascript
 /**
  * Flush both queues and run the watchers.
@@ -453,15 +453,15 @@ Watcher.prototype.run = function run() {
     }
 };
 ```
-注意上面代码中的nextTick是一个非常精彩的异步调用，代码实现也很简洁。
+注意上面代码中的nextTick是一个非常精彩的异步调用，代码实现也很简洁。
 > Vue在内部尝试对异步队列使用原生的 Promise.then 和 MutationObserver，如果执行环境不支持，会采用 setTimeout(fn, 0) 代替。
 
-更详细的nextTick介绍戳这里[异步更新队列](https://cn.vuejs.org/v2/guide/reactivity.html#异步更新队列))
-## computed选项的处理
-跟data选项一样，computed选项的处理也分为三个步骤
+更详细的nextTick介绍戳这里[异步更新队列](https://cn.vuejs.org/v2/guide/reactivity.html#异步更新队列))
+## computed选项的处理
+跟data选项一样，computed选项的处理也分为三个步骤
 
 ### computed选项如何转化为依赖
-同样是在initState中，computed选项从这里出发。
+同样是在initState中，computed选项从这里出发。
 ```javascript
 function initState(vm) {
     ...
@@ -509,11 +509,11 @@ function defineComputed(target, key, userDef) {
 function noop(a, b, c) {}
 ```
 可以看到对于每个computed选项主要的工作是两个:
-- 每个computed选项相应的都有一个watcher，注意到在new Watcher时传入了lazy:true选项，这会将watcher.get求值操作推迟到前面提到的updateComponent中。这里的Watcher实例称为computed watcher。
-- 将每个computed选项直接在Vue上进行了defineProperty操作，而data选项是统一由_data进行管理的。
+- 每个computed选项相应的都有一个watcher，注意到在new Watcher时传入了lazy:true选项，这会将watcher.get求值操作推迟到前面提到的updateComponent中。这里的Watcher实例称为computed watcher。
+- 将每个computed选项直接在Vue上进行了defineProperty操作，而data选项是统一由_data进行管理的。
 
-### computed选项如何工作
-在updateComponent中触发computedGetter，最终对computed选项进行get求值操作，而get的作用在前面也提过了，将当前watcher加入到data选项的dep.subs中。
+### computed选项如何工作
+在updateComponent中触发computedGetter，最终对computed选项进行get求值操作，而get的作用在前面也提过了，将当前watcher加入到data选项的dep.subs中。
 ```javascript
 function createComputedGetter(key) {
     return function computedGetter() {
@@ -542,12 +542,12 @@ Watcher.prototype.depend = function depend() {
 };
 ```
 ### computed选项如何更新
-因为computedGetter操作将computed watcher加入到data选项的dep.subs中，所以data选项的notify自然会通知更新。
+因为computedGetter操作将computed watcher加入到data选项的dep.subs中，所以data选项的notify自然会通知更新。
 
-注意在computedGetter代码中有一个重要的地方 `if(Dep.target){ watcher.depend(); }` 。当一个data选项没有在render watcher使用,但是依赖于这个data选项的computed值在render watcher中使用时，这段代码可以将render watcher加入到data选项的watcher依赖列表中。
+注意在computedGetter代码中有一个重要的地方 `if(Dep.target){ watcher.depend(); }` 。当一个data选项没有在render watcher使用,但是依赖于这个data选项的computed值在render watcher中使用时，这段代码可以将render watcher加入到data选项的watcher依赖列表中。
 
-## watch选项的处理
-watch选项同样也是在initState出发的。
+## watch选项的处理
+watch选项同样也是在initState出发的。
 ```javascript
 function initState(vm) {
     ...
@@ -621,9 +621,9 @@ Watcher.prototype.teardown = function teardown() {
     }
 };
 ```
-可以看到，核心的机制仍然是通过new Watcher加入到data选项的dep.subs依赖列表中，这里的Watcher实例称为$watcher watcher。
+可以看到，核心的机制仍然是通过new Watcher加入到data选项的dep.subs依赖列表中，这里的Watcher实例称为$watcher watcher。
 
-## 总结
-- 单个数据响应式的基础是Object.defineProperty
-- 使用Watcher来封装不同类型的数据响应操作，比如render watcher、computed watcher、$watcher watcher
-- Watcher和单个数据的dep闭包属性构成一个观察者模式是整个响应式工作的框架
+## 总结
+- 单个数据响应式的基础是Object.defineProperty
+- 使用Watcher来封装不同类型的数据响应操作，比如render watcher、computed watcher、$watcher watcher
+- Watcher和单个数据的dep闭包属性构成一个观察者模式是整个响应式工作的框架
