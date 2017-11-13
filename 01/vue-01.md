@@ -456,7 +456,7 @@ Watcher.prototype.run = function run() {
 注意上面代码中的nextTick是一个非常精彩的异步调用，代码实现也很简洁。
 > Vue在内部尝试对异步队列使用原生的 Promise.then 和 MutationObserver，如果执行环境不支持，会采用 setTimeout(fn, 0) 代替。
 
-更详细的nextTick介绍戳这里[异步更新队列](https://cn.vuejs.org/v2/guide/reactivity.html#异步更新队列))
+更详细的nextTick介绍戳这里[异步更新队列](https://cn.vuejs.org/v2/guide/reactivity.html#异步更新队列)
 ## computed选项的处理
 跟data选项一样，computed选项的处理也分为三个步骤
 
