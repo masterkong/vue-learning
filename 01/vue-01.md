@@ -205,6 +205,14 @@ function mountComponent(
     ...
     return vm
 }
+var mount = Vue$3.prototype.$mount;
+Vue$3.prototype.$mount = function(
+    el,
+    hydrating
+) {
+    ...
+    return mount.call(this, el, hydrating)
+};
 
 var Watcher = function Watcher(
     vm,
@@ -243,8 +251,8 @@ var Watcher = function Watcher(
         this.get();
 };
 ```
-这里的Wathcer类型和前面提到的Dep类型，共同构成了data选项依赖工作的核心。
-new Watcher调用的get函数做了下面几件事，这里的Watcher实例称为render watcher。
+注意到$mount调用的mountComponent创建了一个Watcher类型的实例，这个Watcher类型和前面提到的Dep类型，共同构成了data选项依赖工作的核心。
+new Watcher()调用的get函数做了下面几件事，这里的Watcher实例称为render watcher。
 * 将watcher自身压入一个targetStack栈中，可以简单理解为一个context上下文
 * 执行传入的exporFn参数，这里是updateComponent，它是页面html的渲染函数
 * 将前面压入的watcher出栈
