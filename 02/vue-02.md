@@ -4,7 +4,7 @@
 上一篇文章简单学习了Vue响应式架构的实现，接下来就是另一个核心，对Vue template的编译解析。
 由于这块的功能非常复杂且有很多细节的地方，本人能力有限，只能大致描述一下过程，有理解不对的地方，欢迎批评指正。
 
-实现主要分两个部分:渲染函数render是怎么生成的、VNode又是怎么绘制成HTML。
+实现主要分两个部分：渲染函数render是怎么生成的、VNode又是怎么绘制成HTML。
 
 先简单回顾下$mount方法的调用过程，源码的顺序是这样的
 ```javascript
@@ -184,7 +184,7 @@ var createCompiler = createCompilerCreator(function baseCompile(
     }
 });
 ```
-baseCompile将编译过程分为三个步骤
+baseCompile将编译过程分为三个步骤
 #### 解析器(parse)
 解析函数的核心功能就是对template进行文本解析以生成抽象语法树(ast)，主要代码参考[https://johnresig.com/blog/pure-javascript-html-parser/](https://johnresig.com/blog/pure-javascript-html-parser/)
 ```javascript
